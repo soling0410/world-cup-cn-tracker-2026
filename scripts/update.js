@@ -47,15 +47,17 @@ async function main() {
 
   if (changed) {
     writeJson(DATA_PATH, sortRows(current));
-    writeJson(LOG_PATH, {
-      updated_at: nowBeijing(),
-      provider: 'fifa.com',
-      updates
-    });
     console.log(updates.join('\n'));
   } else {
+    updates.push('checked FIFA official API; no data changes');
     console.log('No changes');
   }
+
+  writeJson(LOG_PATH, {
+    updated_at: nowBeijing(),
+    provider: 'fifa.com',
+    updates
+  });
 }
 
 main().catch((err) => {
