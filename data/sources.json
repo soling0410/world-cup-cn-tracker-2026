@@ -1,0 +1,32 @@
+[
+  {
+    "name": "FIFA 官方赛事/赛程/赛制页面",
+    "type": "官方优先",
+    "url": "https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026",
+    "note": "用于核验赛程、赛制和赛事状态。"
+  },
+  {
+    "name": "FIFA 官方 API",
+    "type": "官方优先",
+    "url": "https://api.fifa.com/api/v3/calendar/matches?language=en&count=500&idSeason=285023",
+    "note": "用于自动拉取赛程、比分、状态和对阵信息。"
+  },
+  {
+    "name": "光明网英文频道",
+    "type": "可信媒体",
+    "url": "https://en.gmw.cn/",
+    "note": "用于补充核验中文报道。"
+  },
+  {
+    "name": "央视体育",
+    "type": "交叉验证",
+    "url": "https://sports.cctv.com/",
+    "note": "用于中文赛程和战报交叉验证。"
+  },
+  {
+    "name": "新华网体育",
+    "type": "交叉验证",
+    "url": "http://sports.news.cn/",
+    "note": "用于中文战报交叉验证。"
+  }
+]

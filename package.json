@@ -1,0 +1,10 @@
+{
+  "name": "world-cup-cn-tracker-v2",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "scripts": {
+    "sync": "node scripts/sync-fifa.js",
+    "update": "node scripts/update.js",
+    "build": "node scripts/build.js"
+  }
+}

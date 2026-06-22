@@ -1,0 +1,1446 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  <title>世界杯中文追踪网页 v2</title>
+  <style>
+    :root {
+      --bg: #07111c;
+      --ink: #f3f7ff;
+      --muted: #8fa2ba;
+      --panel: rgba(9, 21, 35, 0.92);
+      --panel-2: rgba(16, 33, 52, 0.94);
+      --line: #23415f;
+      --line-soft: rgba(96, 126, 157, 0.28);
+      --gold: #e6b44d;
+      --mint: #62d6bb;
+      --red: #f16d6d;
+      --blue: #86b7ff;
+      --shadow: 0 20px 60px rgba(0, 0, 0, .28);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+      background:
+        linear-gradient(135deg, rgba(230, 180, 77, .07) 0 1px, transparent 1px 72px),
+        linear-gradient(180deg, #06101a 0%, #0a1725 46%, #07111c 100%);
+      min-height: 100vh;
+    }
+
+    a { color: inherit; }
+
+    .app {
+      width: min(1440px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr);
+      gap: 18px;
+      align-items: stretch;
+      min-height: 300px;
+    }
+
+    .hero-main,
+    .hero-side,
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main {
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-main::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 5px;
+      background: linear-gradient(90deg, var(--gold), var(--mint), var(--blue));
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--mint);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 820px;
+      font-size: 46px;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    .hero-tags,
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .tag,
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 9px;
+      background: rgba(12, 25, 40, .72);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .tag.gold,
+    .pill.accent { color: var(--gold); border-color: rgba(230, 180, 77, .5); }
+    .tag.mint,
+    .pill.finished { color: var(--mint); border-color: rgba(98, 214, 187, .48); }
+    .pill.live { color: #ffd37a; border-color: rgba(230, 180, 77, .55); }
+    .pill.upcoming { color: #d8e6ff; border-color: rgba(134, 183, 255, .44); }
+    .pill.ghost { color: var(--muted); border-color: rgba(143, 162, 186, .28); }
+
+    .hero-side {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat {
+      min-height: 92px;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: var(--panel-2);
+      padding: 14px;
+    }
+
+    .stat b {
+      display: block;
+      font-size: 28px;
+      line-height: 1.1;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .focus-card {
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: rgba(6, 16, 28, .72);
+      padding: 14px;
+    }
+
+    .focus-card h2,
+    .panel h2 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.25;
+    }
+
+    .focus-card p,
+    .note {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .panel {
+      margin-top: 18px;
+      padding: 18px;
+      overflow: hidden;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .section-head span {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: right;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin: 8px 0 14px;
+    }
+
+    .toolbar select {
+      width: min(100%, 380px);
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-2);
+      color: var(--ink);
+      padding: 0 12px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .toolbar select:focus {
+      outline: 2px solid rgba(230, 180, 77, .42);
+      outline-offset: 2px;
+    }
+
+    .summary-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin: 12px 0;
+    }
+
+    .mini-stat {
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: rgba(16, 33, 52, .64);
+      padding: 12px;
+    }
+
+    .mini-stat b {
+      display: block;
+      font-size: 20px;
+    }
+
+    .mini-stat span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .split-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .split-panel {
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: rgba(7, 17, 28, .58);
+      padding: 14px;
+      min-width: 0;
+    }
+
+    .split-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .split-title h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .match-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .match-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      min-height: 86px;
+      border: 1px solid var(--line-soft);
+      border-left: 4px solid var(--blue);
+      border-radius: var(--radius);
+      background: rgba(16, 33, 52, .78);
+      padding: 12px;
+    }
+
+    .match-card.finished { border-left-color: var(--mint); }
+    .match-card.live { border-left-color: var(--gold); }
+    .match-card.upcoming { border-left-color: var(--blue); }
+
+    .match-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .teams {
+      min-width: 0;
+    }
+
+    .team-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--ink);
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .team-line + .team-line {
+      margin-top: 5px;
+    }
+
+    .team-line span:first-child {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .team-placeholder {
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .result {
+      min-width: 76px;
+      text-align: right;
+    }
+
+    .score {
+      color: var(--ink);
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.05;
+    }
+
+    .score.time {
+      color: var(--gold);
+      font-size: 22px;
+    }
+
+    .subtle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .day-analysis {
+      border: 1px solid rgba(230, 180, 77, .32);
+      border-radius: var(--radius);
+      background: rgba(230, 180, 77, .08);
+      color: #f5dfad;
+      line-height: 1.7;
+      padding: 12px 14px;
+      margin-top: 10px;
+    }
+
+    .link-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      border: 1px solid rgba(230, 180, 77, .34);
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(230, 180, 77, .12), rgba(98, 214, 187, .06));
+      padding: 16px;
+    }
+
+    .link-card h2 {
+      margin: 0;
+    }
+
+    .link-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .primary-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      border: 1px solid rgba(230, 180, 77, .62);
+      border-radius: var(--radius);
+      background: rgba(230, 180, 77, .16);
+      color: var(--gold);
+      padding: 0 14px;
+      text-decoration: none;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .date-group {
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      border-top: 1px solid var(--line-soft);
+      padding-top: 12px;
+    }
+
+    .date-stamp {
+      position: sticky;
+      top: 0;
+      color: var(--gold);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .groups {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .group-card {
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: rgba(7, 17, 28, .58);
+      padding: 14px;
+    }
+
+    .group-card h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line-soft);
+      padding: 7px 4px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+      white-space: normal;
+    }
+
+    .bracket-shell {
+      position: relative;
+      margin-top: 14px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .bracket-board {
+      position: relative;
+      min-width: 1380px;
+      display: grid;
+      grid-template-columns: repeat(6, minmax(210px, 1fr));
+      gap: 18px;
+      padding: 4px 4px 20px;
+    }
+
+    .bracket-lines {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible;
+      z-index: 0;
+    }
+
+    .bracket-stage {
+      position: relative;
+      z-index: 1;
+      min-width: 210px;
+    }
+
+    .stage-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 38px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--line-soft);
+      color: var(--gold);
+      font-weight: 800;
+    }
+
+    .stage-head span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .stage-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .bracket-node {
+      min-height: 94px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(16, 33, 52, .94);
+      padding: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .16);
+    }
+
+    .bracket-node .node-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .node-team {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 5px 0;
+      border-top: 1px solid rgba(96, 126, 157, .16);
+      font-weight: 700;
+    }
+
+    .node-team span:first-child {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .source {
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: rgba(7, 17, 28, .58);
+      padding: 14px;
+    }
+
+    .source a {
+      color: var(--mint);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .source p {
+      margin: 9px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 13px;
+    }
+
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: var(--radius);
+      color: var(--muted);
+      background: rgba(16, 33, 52, .38);
+      padding: 14px;
+      line-height: 1.7;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 980px) {
+      .app { padding: 14px; }
+      .hero,
+      .split-grid {
+        grid-template-columns: 1fr;
+      }
+      h1 { font-size: 34px; }
+      .match-card {
+        grid-template-columns: 1fr;
+      }
+      .result {
+        text-align: left;
+      }
+      .date-group {
+        grid-template-columns: 1fr;
+      }
+      .date-stamp {
+        position: static;
+      }
+      .summary-strip {
+        grid-template-columns: 1fr;
+      }
+      .link-card {
+        grid-template-columns: 1fr;
+      }
+      .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .section-head span {
+        text-align: left;
+      }
+    }
+
+    :root {
+      --bg: #f4f6f3;
+      --paper: #fffdf8;
+      --paper-2: #f8faf6;
+      --ink: #17201b;
+      --muted: #68746f;
+      --panel: #fffdf8;
+      --panel-2: #f8faf6;
+      --line: #d7ddd4;
+      --line-soft: #d7ddd4;
+      --line-strong: #202923;
+      --gold: #c89020;
+      --mint: #116348;
+      --red: #c83f36;
+      --blue: #315f91;
+      --shadow: 0 18px 50px rgba(22, 32, 27, .12);
+    }
+
+    body {
+      font-family: "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif;
+      background:
+        linear-gradient(90deg, rgba(23, 32, 27, .045) 1px, transparent 1px),
+        linear-gradient(180deg, #fbfcf8 0%, var(--bg) 52%, #edf2ec 100%);
+      background-size: 48px 48px, auto;
+    }
+
+    .hero-main {
+      border-color: var(--line-strong);
+      background:
+        linear-gradient(135deg, rgba(17, 99, 72, .08), transparent 46%),
+        var(--paper);
+    }
+
+    .hero-main::after {
+      background: linear-gradient(90deg, var(--line-strong), var(--mint), var(--gold));
+    }
+
+    .hero-side {
+      background: #10281f;
+      color: #f7fff9;
+    }
+
+    .hero-side .stat,
+    .focus-card {
+      border-color: rgba(247, 255, 249, .18);
+      background: rgba(247, 255, 249, .08);
+    }
+
+    .hero-side .stat span,
+    .focus-card p {
+      color: #bad3c8;
+    }
+
+    .eyebrow {
+      color: var(--mint);
+      letter-spacing: 0;
+      font-weight: 900;
+    }
+
+    .panel,
+    .match-card,
+    .split-panel,
+    .group-card,
+    .source,
+    .bracket-node,
+    .empty {
+      background: var(--paper);
+      border-color: var(--line);
+      box-shadow: 0 12px 34px rgba(22, 32, 27, .08);
+    }
+
+    .summary-strip .mini-stat,
+    .mini-stat {
+      background: var(--paper-2);
+      border-color: var(--line);
+    }
+
+    .toolbar select {
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    .tag,
+    .pill {
+      background: var(--paper-2);
+      border-color: var(--line);
+      color: var(--muted);
+    }
+
+    .tag.gold,
+    .pill.accent {
+      color: #7d550e;
+      border-color: rgba(200, 144, 32, .42);
+      background: #fff6dc;
+    }
+
+    .tag.mint,
+    .pill.finished {
+      color: var(--mint);
+      border-color: rgba(17, 99, 72, .35);
+      background: #dbece5;
+    }
+
+    .pill.live {
+      color: #7d550e;
+      border-color: rgba(200, 144, 32, .45);
+      background: #fff6dc;
+    }
+
+    .pill.upcoming {
+      color: var(--blue);
+      border-color: rgba(49, 95, 145, .32);
+      background: #e9f1fb;
+    }
+
+    .match-card {
+      border-left-color: var(--blue);
+    }
+
+    .match-card.finished { border-left-color: var(--mint); }
+    .match-card.live { border-left-color: var(--gold); }
+    .match-card.upcoming { border-left-color: var(--blue); }
+
+    .score.time,
+    .date-stamp,
+    .stage-head {
+      color: var(--gold);
+    }
+
+    .day-analysis,
+    .link-card,
+    .callout {
+      border-color: rgba(200, 144, 32, .36);
+      background: #fff6dc;
+      color: #6f4b0c;
+    }
+
+    .primary-link {
+      border-color: rgba(17, 99, 72, .5);
+      background: var(--mint);
+      color: #fff;
+    }
+
+    th,
+    td,
+    .stage-head,
+    .node-team {
+      border-color: var(--line);
+    }
+
+    .source a {
+      color: var(--mint);
+    }
+
+    .bracket-lines path,
+    .bracket-lines line {
+      stroke: rgba(17, 99, 72, .48);
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <section class="hero-main">
+        <p class="eyebrow">World Cup CN Tracker</p>
+        <h1>世界杯中文追踪网页</h1>
+        <p class="lead">
+          面向中文用户的世界杯赛事看板：按北京时间展示赛程、比分、积分、出线趋势和淘汰赛路径。数据以 FIFA 官方接口为主，并通过自动化流程定期更新。
+        </p>
+        <div class="hero-tags">
+          <span class="tag gold">北京时间</span>
+          <span class="tag mint">FIFA 官方数据优先</span>
+          <span class="tag">GitHub Pages 发布</span>
+          <span class="tag">赛后可同步更新</span>
+        </div>
+      </section>
+
+      <aside class="hero-side">
+        <div class="stat-grid" id="heroStats"></div>
+        <article class="focus-card">
+          <h2>下一场提示</h2>
+          <p id="heroFocus">正在读取赛程...</p>
+        </article>
+      </aside>
+    </header>
+
+    <section class="panel" id="todaySection">
+      <div class="section-head">
+        <div>
+          <h2>今日赛程</h2>
+          <p class="note" id="todayLabel"></p>
+        </div>
+        <span>按北京时间自然日统计</span>
+      </div>
+      <div id="todayBoard"></div>
+    </section>
+
+    <section class="panel" id="dailySection">
+      <div class="section-head">
+        <div>
+          <h2>按日期查看</h2>
+          <p class="note">下拉选择日期后，会直接切换到当天比赛，并分为“已比赛过”和“未比赛”。</p>
+        </div>
+        <span id="selectedSummary"></span>
+      </div>
+      <div class="toolbar">
+        <select id="dateSelect" aria-label="选择比赛日期"></select>
+      </div>
+      <div class="day-analysis" id="selectedInsight"></div>
+      <div id="selectedBoard"></div>
+    </section>
+
+    <section class="panel">
+      <div class="link-card">
+        <div>
+          <h2>全部赛程</h2>
+          <p>完整赛程已移到单独页面，首页只保留今日、选日、小组积分和淘汰赛重点信息。</p>
+        </div>
+        <a class="primary-link" href="./all-schedule.html">查看全部赛程</a>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <h2>小组赛积分 / 出线形势 / 趋势</h2>
+          <p class="note">只统计已结束比赛，后续同步比分后会自动更新。</p>
+        </div>
+        <span>12 个小组</span>
+      </div>
+      <div class="groups" id="groupGrid"></div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <h2>淘汰赛对阵图</h2>
+          <p class="note">横向滚动查看完整路径；连线按轮次顺序展示晋级关系。</p>
+        </div>
+        <span>根据官方赛程与赛果更新</span>
+      </div>
+      <div class="bracket-shell" id="bracketShell">
+        <svg class="bracket-lines" id="bracketLines" aria-hidden="true"></svg>
+        <div class="bracket-board" id="bracketBoard"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <h2>下一轮重点提示</h2>
+          <p class="note" id="nextHintNote"></p>
+        </div>
+        <span id="nextHint"></span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="link-card">
+        <div>
+          <h2>世界杯预测分析</h2>
+          <p>独立页面展示基于当前赛果的 Elo + 蒙特卡洛分析，包含单场胜平负概率和小组出线倾向。预测结果仅供赛事观察参考。</p>
+        </div>
+        <a class="primary-link" href="./prediction.html">打开预测页</a>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <h2>数据来源说明</h2>
+          <p class="note">页面来源说明与实际数据来源保持一致：FIFA 官方为主，中文媒体只作为交叉核验或补充。</p>
+        </div>
+        <span>官方优先</span>
+      </div>
+      <div class="source-grid" id="sourceGrid"></div>
+      <div class="footer-note" id="lastUpdate"></div>
+    </section>
+  </main>
+
+  <script>
+    const TZ = 'Asia/Shanghai';
+    const STAGES = [
+      ['round_of_32', '1/16 决赛'],
+      ['round_of_16', '1/8 决赛'],
+      ['quarterfinal', '1/4 决赛'],
+      ['semifinal', '半决赛'],
+      ['third_place', '季军赛'],
+      ['final', '决赛']
+    ];
+
+    const state = {
+      matches: [],
+      sources: [],
+      syncedAt: '',
+      selectedDate: ''
+    };
+
+    const cnNames = {
+      Mexico: '墨西哥',
+      'South Africa': '南非',
+      'Korea Republic': '韩国',
+      Czechia: '捷克',
+      Canada: '加拿大',
+      'Bosnia and Herzegovina': '波黑',
+      'United States': '美国',
+      USA: '美国',
+      Paraguay: '巴拉圭',
+      Qatar: '卡塔尔',
+      Switzerland: '瑞士',
+      Brazil: '巴西',
+      Morocco: '摩洛哥',
+      Haiti: '海地',
+      Scotland: '苏格兰',
+      Australia: '澳大利亚',
+      Turkiye: '土耳其',
+      'Türkiye': '土耳其',
+      Germany: '德国',
+      Curaçao: '库拉索',
+      Curacao: '库拉索',
+      Netherlands: '荷兰',
+      Japan: '日本',
+      "Côte d'Ivoire": '科特迪瓦',
+      "Cote d'Ivoire": '科特迪瓦',
+      Ecuador: '厄瓜多尔',
+      Sweden: '瑞典',
+      Tunisia: '突尼斯',
+      Spain: '西班牙',
+      'Cabo Verde': '佛得角',
+      Belgium: '比利时',
+      Egypt: '埃及',
+      'Saudi Arabia': '沙特阿拉伯',
+      Uruguay: '乌拉圭',
+      'IR Iran': '伊朗',
+      Iran: '伊朗',
+      'New Zealand': '新西兰',
+      France: '法国',
+      Senegal: '塞内加尔',
+      Iraq: '伊拉克',
+      Norway: '挪威',
+      Argentina: '阿根廷',
+      Algeria: '阿尔及利亚',
+      Austria: '奥地利',
+      Jordan: '约旦',
+      Portugal: '葡萄牙',
+      'Congo DR': '刚果民主共和国',
+      Colombia: '哥伦比亚',
+      Uzbekistan: '乌兹别克斯坦',
+      Ghana: '加纳',
+      Panama: '巴拿马',
+      Croatia: '克罗地亚'
+    };
+
+    const escapeHtml = (value = '') => String(value).replace(/[&<>"']/g, (char) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[char]));
+
+    const cnMatch = (value) => cnNames[value] || value || '待定';
+
+    const dateLabel = (date) => new Intl.DateTimeFormat('zh-CN', {
+      timeZone: TZ,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(new Date(`${date}T00:00:00+08:00`)).replace(/\//g, '-');
+
+    const todayDate = () => new Intl.DateTimeFormat('sv-SE', {
+      timeZone: TZ,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(new Date()).replace(/\//g, '-');
+
+    const pageHour = () => `${new Intl.DateTimeFormat('sv-SE', {
+      timeZone: TZ,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      hour12: false
+    }).format(new Date())}:00`;
+
+    const timeLabel = (time) => time || '--:--';
+
+    const syncHour = () => state.syncedAt ? `${state.syncedAt.slice(0, 13)}:00` : '未同步';
+
+    const stageText = (m) => ({
+      group: m.group ? `${m.group}组` : '小组赛',
+      round_of_32: '1/16 决赛',
+      round_of_16: '1/8 决赛',
+      quarterfinal: '1/4 决赛',
+      semifinal: '半决赛',
+      third_place: '季军赛',
+      final: '决赛'
+    }[m.stage] || '待定');
+
+    const statusText = (status) => ({
+      finished: '已结束',
+      live: '进行中',
+      upcoming: '未开始'
+    }[status] || '待定');
+
+    const scoreText = (m) => Number.isFinite(m.home_score) && Number.isFinite(m.away_score)
+      ? `${m.home_score}-${m.away_score}`
+      : '待定';
+
+    function byDate(rows) {
+      const map = new Map();
+      for (const row of rows) {
+        if (!map.has(row.date_beijing)) map.set(row.date_beijing, []);
+        map.get(row.date_beijing).push(row);
+      }
+      return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+    }
+
+    function sortMatches(rows) {
+      return [...rows].sort((a, b) => (
+        a.date_beijing.localeCompare(b.date_beijing)
+        || a.kickoff_beijing.localeCompare(b.kickoff_beijing)
+        || String(a.match_id).localeCompare(String(b.match_id))
+      ));
+    }
+
+    function defaultDate() {
+      const today = todayDate();
+      const dates = byDate(state.matches).map(([date]) => date);
+      return dates.includes(today) ? today : (dates[0] || '');
+    }
+
+    function partition(rows) {
+      return {
+        played: rows.filter((m) => m.status !== 'upcoming'),
+        upcoming: rows.filter((m) => m.status === 'upcoming')
+      };
+    }
+
+    function displayTeam(m, side) {
+      const cn = side === 'home' ? m.home_team_cn : m.away_team_cn;
+      const en = side === 'home' ? m.home_team_en : m.away_team_en;
+      const placeholder = side === 'home' ? m.placeholder_a : m.placeholder_b;
+      return cn || (en ? cnMatch(en) : '') || placeholderText(placeholder) || '待定';
+    }
+
+    function placeholderText(code) {
+      if (!code) return '';
+      const value = String(code).trim().toUpperCase();
+      const groupRank = value.match(/^([123])([A-L])$/);
+      if (groupRank) return `${groupRank[2]}组第${groupRank[1]}`;
+      const thirdCombo = value.match(/^3([A-L]{2,})$/);
+      if (thirdCombo) return `${thirdCombo[1].split('').join('/')}组第3之一`;
+      const winner = value.match(/^W(\d+)$/);
+      if (winner) return `第${winner[1]}场胜者`;
+      const runnerUp = value.match(/^RU(\d+)$/);
+      if (runnerUp) return `第${runnerUp[1]}场负者`;
+      return value;
+    }
+
+    function renderPill(text, cls = 'ghost') {
+      return `<span class="pill ${cls}">${escapeHtml(text)}</span>`;
+    }
+
+    function renderMatchCard(m, options = {}) {
+      const showDate = options.showDate !== false;
+      const home = displayTeam(m, 'home');
+      const away = displayTeam(m, 'away');
+      const isFinished = m.status === 'finished';
+      const isLive = m.status === 'live';
+      const result = isFinished || isLive ? scoreText(m) : timeLabel(m.kickoff_beijing);
+      const resultNote = isFinished ? '最终比分' : (isLive ? '实时比分' : '开球时间');
+      const placeholder = (!m.home_team_cn && !m.home_team_en) || (!m.away_team_cn && !m.away_team_en);
+
+      return `
+        <article class="match-card ${escapeHtml(m.status)}">
+          <div class="match-meta">
+            ${renderPill(stageText(m), 'accent')}
+            ${renderPill(statusText(m.status), m.status)}
+            ${showDate ? renderPill(`${dateLabel(m.date_beijing)} ${timeLabel(m.kickoff_beijing)}`, 'ghost') : ''}
+          </div>
+          <div class="teams">
+            <div class="team-line ${placeholder ? 'team-placeholder' : ''}">
+              <span>${escapeHtml(home)}</span>
+              <span>主</span>
+            </div>
+            <div class="team-line ${placeholder ? 'team-placeholder' : ''}">
+              <span>${escapeHtml(away)}</span>
+              <span>客</span>
+            </div>
+          </div>
+          <div class="result">
+            <div class="score ${isFinished || isLive ? '' : 'time'}">${escapeHtml(result)}</div>
+            <div class="subtle">${resultNote}</div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderSplit(rows, options = {}) {
+      const { played, upcoming } = partition(sortMatches(rows));
+      const showDate = options.showDate !== false;
+      return `
+        <div class="summary-strip">
+          <div class="mini-stat"><b>${rows.length}</b><span>当天比赛</span></div>
+          <div class="mini-stat"><b>${played.length}</b><span>已比赛过</span></div>
+          <div class="mini-stat"><b>${upcoming.length}</b><span>未比赛</span></div>
+        </div>
+        <div class="split-grid">
+          <section class="split-panel">
+            <div class="split-title">
+              <h3>已比赛过</h3>
+              ${renderPill(`${played.length} 场`, 'finished')}
+            </div>
+            <div class="match-list">
+              ${played.length ? played.map((m) => renderMatchCard(m, { showDate })).join('') : '<div class="empty">这一天还没有已结束或进行中的比赛。</div>'}
+            </div>
+          </section>
+          <section class="split-panel">
+            <div class="split-title">
+              <h3>未比赛</h3>
+              ${renderPill(`${upcoming.length} 场`, 'upcoming')}
+            </div>
+            <div class="match-list">
+              ${upcoming.length ? upcoming.map((m) => renderMatchCard(m, { showDate })).join('') : '<div class="empty">这一天没有待开球比赛。</div>'}
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    function dayInsight(rows) {
+      if (!rows.length) return '这一天暂无比赛。';
+      const sorted = sortMatches(rows);
+      const next = sorted.find((m) => m.status === 'upcoming');
+      const live = sorted.find((m) => m.status === 'live');
+      const finished = sorted.filter((m) => m.status === 'finished');
+      if (live) {
+        return `正在进行：${displayTeam(live, 'home')} vs ${displayTeam(live, 'away')}，当前比分 ${scoreText(live)}。`;
+      }
+      if (next) {
+        return `重点提示：${displayTeam(next, 'home')} vs ${displayTeam(next, 'away')} 将在北京时间 ${timeLabel(next.kickoff_beijing)} 开球。`;
+      }
+      return `这一天 ${finished.length} 场比赛已全部结束，可以直接查看比分，并结合小组积分变化判断出线趋势。`;
+    }
+
+    function renderHero(rows) {
+      const finished = rows.filter((m) => m.status === 'finished').length;
+      const live = rows.filter((m) => m.status === 'live').length;
+      const upcoming = rows.filter((m) => m.status === 'upcoming').length;
+      document.getElementById('heroStats').innerHTML = `
+        <div class="stat"><b>${rows.length}</b><span>总场次</span></div>
+        <div class="stat"><b>${finished}</b><span>已结束</span></div>
+        <div class="stat"><b>${upcoming}</b><span>未比赛</span></div>
+        <div class="stat"><b>${live}</b><span>进行中</span></div>
+      `;
+    }
+
+    function renderToday(rows) {
+      const today = todayDate();
+      const todayRows = rows.filter((m) => m.date_beijing === today);
+      document.getElementById('todayLabel').textContent = `${dateLabel(today)} 北京时间`;
+      document.getElementById('todayBoard').innerHTML = todayRows.length
+        ? renderSplit(todayRows, { showDate: false })
+        : '<div class="empty">今天暂无比赛。</div>';
+    }
+
+    function renderDateSelect(rows) {
+      const groups = byDate(rows);
+      const select = document.getElementById('dateSelect');
+      select.innerHTML = groups.map(([date, list]) => `
+        <option value="${date}"${date === state.selectedDate ? ' selected' : ''}>
+          ${dateLabel(date)} · ${list.length} 场
+        </option>
+      `).join('');
+      select.onchange = () => {
+        state.selectedDate = select.value;
+        renderSelectedDate(state.matches);
+      };
+    }
+
+    function renderSelectedDate(rows) {
+      const selectedRows = rows.filter((m) => m.date_beijing === state.selectedDate);
+      document.getElementById('selectedSummary').textContent = `${dateLabel(state.selectedDate)} · ${selectedRows.length} 场`;
+      document.getElementById('selectedInsight').textContent = dayInsight(selectedRows);
+      document.getElementById('selectedBoard').innerHTML = selectedRows.length
+        ? renderSplit(selectedRows, { showDate: false })
+        : '<div class="empty">该日期暂无比赛。</div>';
+    }
+
+    function renderAllSchedule(rows) {
+      const groups = byDate(rows);
+      document.getElementById('allSchedule').innerHTML = groups.map(([date, list]) => `
+        <section class="date-group">
+          <div class="date-stamp">${dateLabel(date)}</div>
+          <div class="match-list">
+            ${sortMatches(list).map((m) => renderMatchCard(m, { showDate: false })).join('')}
+          </div>
+        </section>
+      `).join('');
+    }
+
+    function calcStandings(rows) {
+      const groups = {};
+      for (const m of rows) {
+        if (m.stage !== 'group' || m.status !== 'finished' || !Number.isFinite(m.home_score) || !Number.isFinite(m.away_score)) continue;
+        const group = m.group || '未定';
+        groups[group] ||= {};
+        const home = displayTeam(m, 'home');
+        const away = displayTeam(m, 'away');
+        for (const team of [home, away]) {
+          groups[group][team] ||= { team, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0 };
+        }
+        const h = groups[group][home];
+        const a = groups[group][away];
+        h.p += 1; a.p += 1;
+        h.gf += m.home_score; h.ga += m.away_score;
+        a.gf += m.away_score; a.ga += m.home_score;
+        if (m.home_score > m.away_score) {
+          h.w += 1; h.pts += 3; a.l += 1;
+        } else if (m.home_score < m.away_score) {
+          a.w += 1; a.pts += 3; h.l += 1;
+        } else {
+          h.d += 1; a.d += 1; h.pts += 1; a.pts += 1;
+        }
+        h.gd = h.gf - h.ga;
+        a.gd = a.gf - a.ga;
+      }
+
+      return Object.fromEntries(Object.entries(groups).map(([group, teams]) => [
+        group,
+        Object.values(teams).sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf || a.team.localeCompare(b.team, 'zh-Hans-CN'))
+      ]));
+    }
+
+    function renderGroups(rows) {
+      const standings = calcStandings(rows);
+      const entries = Object.entries(standings).sort(([a], [b]) => a.localeCompare(b));
+      document.getElementById('groupGrid').innerHTML = entries.length ? entries.map(([group, table]) => {
+        const played = rows.filter((m) => m.stage === 'group' && m.group === group && m.status === 'finished').length;
+        const left = rows.filter((m) => m.stage === 'group' && m.group === group && m.status === 'upcoming').length;
+        const leader = table[0]?.team || '待定';
+        const second = table[1]?.team || '待定';
+        return `
+          <article class="group-card">
+            <h3>${escapeHtml(group)}组</h3>
+            <p class="note">当前 ${escapeHtml(leader)} 领跑，${escapeHtml(second)} 位于第二；已赛 ${played} 场，剩余 ${left} 场。</p>
+            <table>
+              <thead>
+                <tr><th>球队</th><th>赛</th><th>胜</th><th>平</th><th>负</th><th>净</th><th>分</th></tr>
+              </thead>
+              <tbody>
+                ${table.map((row) => `
+                  <tr>
+                    <td>${escapeHtml(row.team)}</td>
+                    <td>${row.p}</td>
+                    <td>${row.w}</td>
+                    <td>${row.d}</td>
+                    <td>${row.l}</td>
+                    <td>${row.gd}</td>
+                    <td>${row.pts}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </article>
+        `;
+      }).join('') : '<div class="empty">小组赛还没有可统计结果。</div>';
+    }
+
+    function renderBracketNode(m, stageKey, index) {
+      const home = displayTeam(m, 'home') || m.placeholder_a || '待定';
+      const away = displayTeam(m, 'away') || m.placeholder_b || '待定';
+      const status = m.status === 'finished' ? scoreText(m) : timeLabel(m.kickoff_beijing);
+      const statusNote = m.status === 'finished' ? '比分' : '开球';
+      return `
+        <article class="bracket-node" data-stage="${stageKey}" data-index="${index}">
+          <div class="node-meta">
+            <span>${dateLabel(m.date_beijing)} ${timeLabel(m.kickoff_beijing)}</span>
+            <span>${escapeHtml(statusNote)} ${escapeHtml(status)}</span>
+          </div>
+          <div class="node-team">
+            <span>${escapeHtml(home)}</span>
+            <span>${m.status === 'finished' ? escapeHtml(String(m.home_score ?? '')) : ''}</span>
+          </div>
+          <div class="node-team">
+            <span>${escapeHtml(away)}</span>
+            <span>${m.status === 'finished' ? escapeHtml(String(m.away_score ?? '')) : ''}</span>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderBracket(rows) {
+      const board = document.getElementById('bracketBoard');
+      board.innerHTML = STAGES.map(([key, label]) => {
+        const list = sortMatches(rows.filter((m) => m.stage === key));
+        return `
+          <section class="bracket-stage" data-stage="${key}">
+            <div class="stage-head">
+              <strong>${label}</strong>
+              <span>${list.length} 场</span>
+            </div>
+            <div class="stage-stack">
+              ${list.length ? list.map((m, index) => renderBracketNode(m, key, index)).join('') : '<div class="empty">待官方确认</div>'}
+            </div>
+          </section>
+        `;
+      }).join('');
+
+      requestAnimationFrame(drawBracketLines);
+    }
+
+    function drawBracketLines() {
+      const shell = document.getElementById('bracketShell');
+      const svg = document.getElementById('bracketLines');
+      if (!shell || !svg) return;
+      const shellBox = shell.getBoundingClientRect();
+      const width = shell.scrollWidth;
+      const height = shell.scrollHeight;
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+      svg.setAttribute('width', width);
+      svg.setAttribute('height', height);
+      const paths = [];
+
+      for (let s = 0; s < STAGES.length - 1; s += 1) {
+        const current = [...document.querySelectorAll(`.bracket-node[data-stage="${STAGES[s][0]}"]`)];
+        const next = [...document.querySelectorAll(`.bracket-node[data-stage="${STAGES[s + 1][0]}"]`)];
+        if (!current.length || !next.length) continue;
+        current.forEach((node, index) => {
+          const target = next[Math.floor(index / 2)];
+          if (!target) return;
+          const a = node.getBoundingClientRect();
+          const b = target.getBoundingClientRect();
+          const x1 = a.right - shellBox.left + shell.scrollLeft;
+          const y1 = a.top - shellBox.top + shell.scrollTop + a.height / 2;
+          const x2 = b.left - shellBox.left + shell.scrollLeft;
+          const y2 = b.top - shellBox.top + shell.scrollTop + b.height / 2;
+          const mid = x1 + Math.max(18, (x2 - x1) / 2);
+          paths.push(`<path d="M ${x1} ${y1} H ${mid} V ${y2} H ${x2}" fill="none" stroke="rgba(230,180,77,.42)" stroke-width="2" stroke-linecap="round" />`);
+        });
+      }
+      svg.innerHTML = paths.join('');
+    }
+
+    function renderNextHint(rows) {
+      const next = sortMatches(rows).find((m) => m.status === 'upcoming');
+      document.getElementById('heroFocus').textContent = next
+        ? `${dateLabel(next.date_beijing)} ${timeLabel(next.kickoff_beijing)}，${displayTeam(next, 'home')} vs ${displayTeam(next, 'away')}`
+        : '暂无下一场比赛。';
+      document.getElementById('nextHint').textContent = next
+        ? `${dateLabel(next.date_beijing)} ${timeLabel(next.kickoff_beijing)}`
+        : '暂无';
+      document.getElementById('nextHintNote').textContent = next
+        ? `下一场重点：${displayTeam(next, 'home')} vs ${displayTeam(next, 'away')}，阶段为 ${stageText(next)}。未开始比赛会优先显示北京时间开球时间。`
+        : '当前赛程已全部结束。';
+    }
+
+    function renderSources(sources) {
+      document.getElementById('sourceGrid').innerHTML = sources.map((s) => `
+        <article class="source">
+          <a href="${escapeHtml(s.url)}" target="_blank" rel="noreferrer">${escapeHtml(s.name)}</a>
+          <p><strong>${escapeHtml(s.type)}</strong>：${escapeHtml(s.note)}</p>
+        </article>
+      `).join('');
+      document.getElementById('lastUpdate').textContent =
+        `数据同步时间：${syncHour()}（北京时间，来源：FIFA 官方 API）；页面打开时间：${pageHour()}（北京时间，精确到小时）。`;
+    }
+
+    function renderAllViews() {
+      renderHero(state.matches);
+      renderToday(state.matches);
+      renderDateSelect(state.matches);
+      renderSelectedDate(state.matches);
+      renderGroups(state.matches);
+      renderBracket(state.matches);
+      renderNextHint(state.matches);
+      renderSources(state.sources);
+    }
+
+    async function load() {
+      const [matchesRes, sourcesRes, logRes] = await Promise.all([
+        fetch('./data/matches.json', { cache: 'no-store' }),
+        fetch('./data/sources.json', { cache: 'no-store' }),
+        fetch('./data/last-update-log.json', { cache: 'no-store' })
+      ]);
+      state.matches = sortMatches(await matchesRes.json());
+      state.sources = await sourcesRes.json();
+      const log = await logRes.json();
+      state.syncedAt = log.updated_at || state.matches.at(-1)?.last_updated || '';
+      state.selectedDate = defaultDate();
+      renderAllViews();
+    }
+
+    window.addEventListener('resize', () => {
+      clearTimeout(window.__bracketResizeTimer);
+      window.__bracketResizeTimer = setTimeout(drawBracketLines, 120);
+    });
+
+    load().catch((err) => {
+      console.error(err);
+      document.body.innerHTML = '<div style="padding:24px;color:#fff;background:#07111c;min-height:100vh">页面加载失败，暂时无法读取赛事数据。请稍后刷新或检查数据文件是否已发布。</div>';
+    });
+  </script>
+</body>
+</html>
