@@ -103,8 +103,10 @@ function groupCode(match) {
 }
 
 function statusOf(match) {
-  if (Number.isFinite(match.HomeTeamScore) && Number.isFinite(match.AwayTeamScore)) return 'finished';
-  if (match.MatchStatus === 0 || String(match.MatchTime || '').includes("'")) return 'live';
+  const hasScore = Number.isFinite(match.HomeTeamScore) && Number.isFinite(match.AwayTeamScore);
+  const hasOfficialResult = Number(match.ResultType) === 1 && Number(match.OfficialityStatus) === 1;
+  if (hasOfficialResult) return 'finished';
+  if (hasScore || match.MatchStatus === 0 || String(match.MatchTime || '').includes("'")) return 'live';
   return 'upcoming';
 }
 
