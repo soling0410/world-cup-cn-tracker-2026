@@ -1,7 +1,34 @@
 {
-  "updated_at": "2026-06-23 11:00+08:00",
+  "updated_at": "2026-06-23 15:00+08:00",
   "provider": "fifa.com",
   "updates": [
-    "400021499: refreshed live"
+    "400021503: refreshed upcoming",
+    "400021506: refreshed upcoming",
+    "400021511: refreshed upcoming",
+    "400021501: refreshed upcoming",
+    "400021448: refreshed upcoming",
+    "400021451: refreshed upcoming",
+    "400021452: refreshed upcoming",
+    "400021455: refreshed upcoming",
+    "400021444: refreshed upcoming",
+    "400021445: refreshed upcoming",
+    "400021466: refreshed upcoming",
+    "400021468: refreshed upcoming",
+    "400021471: refreshed upcoming",
+    "400021473: refreshed upcoming",
+    "400021459: refreshed upcoming",
+    "400021461: refreshed upcoming",
+    "400021489: refreshed upcoming",
+    "400021493: refreshed upcoming",
+    "400021484: refreshed upcoming",
+    "400021485: refreshed upcoming",
+    "400021479: refreshed upcoming",
+    "400021481: refreshed upcoming",
+    "400021508: refreshed upcoming",
+    "400021509: refreshed upcoming",
+    "400021500: refreshed upcoming",
+    "400021505: refreshed upcoming",
+    "400021495: refreshed upcoming",
+    "400021497: refreshed upcoming"
   ]
 }
