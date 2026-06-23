@@ -106,6 +106,9 @@ function statusOf(match) {
   const hasScore = Number.isFinite(match.HomeTeamScore) && Number.isFinite(match.AwayTeamScore);
   const hasOfficialResult = Number(match.ResultType) === 1 && Number(match.OfficialityStatus) === 1;
   if (hasOfficialResult) return 'finished';
+  const kickoff = Date.parse(match.Date);
+  const hasStarted = Number.isFinite(kickoff) && kickoff <= Date.now();
+  if (!hasStarted) return 'upcoming';
   if (hasScore || match.MatchStatus === 0 || String(match.MatchTime || '').includes("'")) return 'live';
   return 'upcoming';
 }
